@@ -1,0 +1,14 @@
+{
+  "name": "shortcut-groomer",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "node --import tsx/esm index.ts"
+  },
+  "dependencies": {
+    "tsx": "^4.19.2"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0"
+  }
+}
