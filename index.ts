@@ -3,6 +3,7 @@ import { existsSync } from "node:fs";
 import { homedir } from "node:os";
 import { startCodebaseSync } from "./src/codebase-sync.ts";
 import { startGroomer } from "./src/groomer.ts";
+import { startPlanner } from "./src/planner.ts";
 
 function checkDependencies(codebasePath: string): void {
   try {
@@ -39,6 +40,8 @@ const config = {
   codebasePath: process.env.CODEBASE_PATH ?? `${homedir()}/Work/gemini`,
   model: process.env.GROOMER_MODEL ?? "claude-sonnet-4-6",
   pollIntervalMinutes,
+  enableGroomer: process.env.ENABLE_GROOMER === "true",
+  enablePlanner: process.env.ENABLE_PLANNER === "true",
 };
 
 if (!config.apiToken) throw new Error("SHORTCUT_API_TOKEN is required");
@@ -46,18 +49,23 @@ if (!config.ownerMemberId) throw new Error("SHORTCUT_OWNER_MEMBER_ID is required
 
 checkDependencies(config.codebasePath);
 
+console.log(`[shortcut-helper] groomer=${config.enableGroomer ? "on" : "off"} planner=${config.enablePlanner ? "on" : "off"}`);
+
 const stopSync = startCodebaseSync(config.codebasePath);
-const stopGroomer = startGroomer(config);
+const stopGroomer = config.enableGroomer ? startGroomer(config) : null;
+const stopPlanner = config.enablePlanner ? startPlanner(config) : null;
 
 process.on("SIGINT", () => {
-  console.log("\n[shortcut-groomer] shutting down");
-  stopGroomer();
+  console.log("\n[shortcut-helper] shutting down");
+  stopGroomer?.();
+  stopPlanner?.();
   stopSync();
   process.exit(0);
 });
 
 process.on("SIGTERM", () => {
-  stopGroomer();
+  stopGroomer?.();
+  stopPlanner?.();
   stopSync();
   process.exit(0);
 });
