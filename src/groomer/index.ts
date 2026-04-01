@@ -28,27 +28,38 @@ export function startGroomer(config: GroomerConfig): () => void {
   const modelAlias = CLI_MODEL_ALIASES[modelName] ?? "sonnet";
   const mcpConfigPath = writeMcpConfig(config.apiToken, "groomer");
 
+  let running = false;
+
   const poll = async () => {
-    console.log("[groomer] polling for ungroomed stories...");
-    const userPrompt = buildUserPrompt(config.ownerMemberId, config.codebasePath);
-    let lastErr: unknown;
-    for (let attempt = 1; attempt <= 3; attempt++) {
-      try {
-        const result = await spawnClaudeSession(userPrompt, SYSTEM_PROMPT, modelAlias, mcpConfigPath, config.codebasePath);
-        console.log(`[groomer] cycle complete:\n${result}`);
-        return;
-      } catch (err) {
-        lastErr = err;
-        const msg = String(err);
-        if (attempt < 3 && msg.includes("tool use concurrency")) {
-          console.warn(`[groomer] attempt ${attempt} hit concurrency error, retrying in 5s...`);
-          await new Promise((r) => setTimeout(r, 5_000));
-          continue;
-        }
-        break;
-      }
+    if (running) {
+      console.log("[groomer] previous cycle still running, skipping");
+      return;
     }
-    console.error(`[groomer] cycle failed: ${lastErr}`);
+    running = true;
+    try {
+      console.log("[groomer] polling for ungroomed stories...");
+      const userPrompt = buildUserPrompt(config.ownerMemberId, config.codebasePath);
+      let lastErr: unknown;
+      for (let attempt = 1; attempt <= 3; attempt++) {
+        try {
+          const result = await spawnClaudeSession(userPrompt, SYSTEM_PROMPT, modelAlias, mcpConfigPath, config.codebasePath);
+          console.log(`[groomer] cycle complete:\n${result}`);
+          return;
+        } catch (err) {
+          lastErr = err;
+          const msg = String(err);
+          if (attempt < 3 && msg.includes("tool use concurrency")) {
+            console.warn(`[groomer] attempt ${attempt} hit concurrency error, retrying in 5s...`);
+            await new Promise((r) => setTimeout(r, 5_000));
+            continue;
+          }
+          break;
+        }
+      }
+      console.error(`[groomer] cycle failed: ${lastErr}`);
+    } finally {
+      running = false;
+    }
   };
 
   void poll();

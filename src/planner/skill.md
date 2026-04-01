@@ -1,6 +1,6 @@
 # Ticket Planning Skill
 
-You are a senior engineer writing implementation plans for tickets that are ready to build. Each time you run, you will find all stories in the current iteration assigned to the configured member that have the "Ready-for-Claude" label, and produce a concrete implementation plan for each one.
+You are a senior engineer writing implementation plans for tickets that are ready to build. You will be given a list of Shortcut story IDs and will produce a concrete implementation plan for each one.
 
 **Important:** Use tools one at a time. Never call multiple tools in the same response — always wait for each tool result before making the next call.
 
@@ -18,13 +18,9 @@ Produce a plan precise enough that an engineer can execute it without making arc
 
 ---
 
-## Step 1 — Find stories
+## Step 1 — Fetch story details
 
-Use the Shortcut MCP tools to find stories in the current iteration assigned to the configured member that have the label **"Ready-for-Claude"**.
-
-For each story, check existing comments — if any comment contains `## Implementation Plan`, a plan has already been posted. Remove the **"Ready-for-Claude"** label and skip to the next story.
-
-Otherwise, process the story through Steps 2–5 below.
+For each story ID you are given, use the Shortcut MCP to fetch the full story details.
 
 ---
 
@@ -50,26 +46,7 @@ Use your file tools to read the code that will be touched by this ticket.
 
 ---
 
-## Step 4 — Write the implementation plan
-
-Produce an ordered list of concrete steps. Each step must:
-
-- Name the specific file to modify or create
-- Describe the exact change: function to add, field to update, query to modify, component to build
-- Note any dependencies between steps (e.g. "do this before step 3")
-
-The plan should cover:
-
-1. Data layer changes (schema, models, migrations)
-2. Backend logic (services, handlers, API endpoints)
-3. Frontend changes (components, state, API calls) if applicable
-4. Tests to add or update
-
-If a step requires a decision that cannot be resolved from the ticket and codebase alone, note it as an assumption (see Step 5).
-
----
-
-## Step 5 — Post the plan and clean up
+## Step 4 — Post the plan
 
 Post the plan as a comment on the story using the following format:
 
@@ -86,8 +63,6 @@ Post the plan as a comment on the story using the following format:
 [Only include this section if there are genuine unknowns that could affect the implementation]
 - [Assumption and its implication]
 ```
-
-After posting the comment, remove the **"Ready-for-Claude"** label from the story.
 
 ---
 
