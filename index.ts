@@ -1,6 +1,32 @@
+import { execFileSync } from "node:child_process";
+import { existsSync } from "node:fs";
 import { homedir } from "node:os";
 import { startCodebaseSync } from "./src/codebase-sync.ts";
 import { startGroomer } from "./src/groomer.ts";
+
+function checkDependencies(codebasePath: string): void {
+  try {
+    execFileSync("which", ["claude"], { stdio: "ignore" });
+  } catch {
+    throw new Error("claude CLI is not installed or not in PATH. Install it from https://claude.ai/code");
+  }
+
+  try {
+    execFileSync("which", ["npx"], { stdio: "ignore" });
+  } catch {
+    throw new Error("npx is not available. Install Node.js from https://nodejs.org");
+  }
+
+  if (!existsSync(codebasePath)) {
+    throw new Error(`CODEBASE_PATH does not exist: ${codebasePath}`);
+  }
+
+  try {
+    execFileSync("git", ["-C", codebasePath, "rev-parse", "--git-dir"], { stdio: "ignore" });
+  } catch {
+    throw new Error(`CODEBASE_PATH is not a git repository: ${codebasePath}`);
+  }
+}
 
 const pollIntervalMinutes = Number(process.env.POLL_INTERVAL_MINUTES ?? "3");
 if (!Number.isFinite(pollIntervalMinutes) || pollIntervalMinutes <= 0) {
@@ -17,6 +43,8 @@ const config = {
 
 if (!config.apiToken) throw new Error("SHORTCUT_API_TOKEN is required");
 if (!config.ownerMemberId) throw new Error("SHORTCUT_OWNER_MEMBER_ID is required");
+
+checkDependencies(config.codebasePath);
 
 const stopSync = startCodebaseSync(config.codebasePath);
 const stopGroomer = startGroomer(config);
