@@ -1,10 +1,10 @@
 import { readFileSync, unlinkSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { CLI_MODEL_ALIASES, spawnClaudeSession, writeMcpConfig } from "./spawn-claude.ts";
+import { CLI_MODEL_ALIASES, spawnClaudeSession, writeMcpConfig } from "../lib/spawn-claude.ts";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const SYSTEM_PROMPT = readFileSync(join(__dirname, "grooming-skill.md"), "utf8");
+const SYSTEM_PROMPT = readFileSync(join(__dirname, "skill.md"), "utf8");
 
 export type GroomerConfig = {
   apiToken: string;

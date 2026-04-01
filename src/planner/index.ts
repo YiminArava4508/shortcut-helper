@@ -1,11 +1,11 @@
 import { readFileSync, unlinkSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import type { GroomerConfig } from "./groomer.ts";
-import { CLI_MODEL_ALIASES, spawnClaudeSession, writeMcpConfig } from "./spawn-claude.ts";
+import type { GroomerConfig } from "../groomer/index.ts";
+import { CLI_MODEL_ALIASES, spawnClaudeSession, writeMcpConfig } from "../lib/spawn-claude.ts";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const SYSTEM_PROMPT = readFileSync(join(__dirname, "planning-skill.md"), "utf8");
+const SYSTEM_PROMPT = readFileSync(join(__dirname, "skill.md"), "utf8");
 
 function buildUserPrompt(ownerMemberId: string, codebasePath: string): string {
   return `Your owner member ID is: ${ownerMemberId}

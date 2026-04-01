@@ -1,9 +1,9 @@
 import { execFileSync } from "node:child_process";
 import { existsSync } from "node:fs";
 import { homedir } from "node:os";
-import { startCodebaseSync } from "./src/codebase-sync.ts";
-import { startGroomer } from "./src/groomer.ts";
-import { startPlanner } from "./src/planner.ts";
+import { startCodebaseSync } from "./src/lib/codebase-sync.ts";
+import { startGroomer } from "./src/groomer/index.ts";
+import { startPlanner } from "./src/planner/index.ts";
 
 function checkDependencies(codebasePath: string): void {
   try {
