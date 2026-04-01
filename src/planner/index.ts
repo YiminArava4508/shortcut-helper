@@ -11,9 +11,9 @@ function buildUserPrompt(ownerMemberId: string, codebasePath: string): string {
   return `Your owner member ID is: ${ownerMemberId}
 The gemini repository is at: ${codebasePath}
 
-Use the Shortcut MCP tools to find all stories in the current iteration assigned to this member that have the "Ready-for-Claude" label. For each such story, check if it has a grooming comment (a comment that starts with a numbered list or contains "No questions generated"). Skip any stories that have not been groomed yet.
+Use the Shortcut MCP tools to find all stories in the current iteration assigned to this member that have the "Ready-for-Claude" label.
 
-For each groomed, ready story, follow your planning instructions: read the ticket and grooming comments, explore the gemini repo using your file tools, write a detailed implementation plan, post it as a comment, and remove the "Ready-for-Claude" label.`;
+For each such story, follow your planning instructions: read the ticket and any existing comments, explore the gemini repo using your file tools, write a detailed implementation plan, post it as a comment, and remove the "Ready-for-Claude" label.`;
 }
 
 export function startPlanner(config: GroomerConfig): () => void {
