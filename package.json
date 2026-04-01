@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "start": "node --import tsx/esm index.ts"
+    "start": "node --env-file=.env --import tsx/esm index.ts"
   },
   "dependencies": {
     "tsx": "^4.19.2"
