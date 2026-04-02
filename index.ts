@@ -1,7 +1,6 @@
 import { execFileSync } from "node:child_process";
 import { existsSync } from "node:fs";
 import { homedir } from "node:os";
-import { startCodebaseSync } from "./src/lib/codebase-sync.ts";
 import { startGroomer } from "./src/groomer/index.ts";
 import { startPlanner } from "./src/planner/index.ts";
 
@@ -51,7 +50,6 @@ checkDependencies(config.codebasePath);
 
 console.log(`[shortcut-helper] groomer=${config.enableGroomer ? "on" : "off"} planner=${config.enablePlanner ? "on" : "off"}`);
 
-const stopSync = startCodebaseSync(config.codebasePath);
 const stopGroomer = config.enableGroomer ? startGroomer(config) : null;
 const stopPlanner = config.enablePlanner ? startPlanner(config) : null;
 
@@ -59,13 +57,11 @@ process.on("SIGINT", () => {
   console.log("\n[shortcut-helper] shutting down");
   stopGroomer?.();
   stopPlanner?.();
-  stopSync();
   process.exit(0);
 });
 
 process.on("SIGTERM", () => {
   stopGroomer?.();
   stopPlanner?.();
-  stopSync();
   process.exit(0);
 });

@@ -2,6 +2,7 @@ import { readFileSync, unlinkSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { GroomerConfig } from "../groomer/index.ts";
+import { pullCodebase } from "../lib/codebase-sync.ts";
 import { getReadyForClaudeStories, removeLabelFromStory } from "../lib/shortcut-api.ts";
 import { CLI_MODEL_ALIASES, spawnClaudeSession, writeMcpConfig } from "../lib/spawn-claude.ts";
 
@@ -40,6 +41,8 @@ export function startPlanner(config: GroomerConfig): () => void {
 
       const storyIds = stories.map((s) => s.id);
       console.log(`[planner] found ${stories.length} story/stories: ${storyIds.join(", ")}`);
+
+      await pullCodebase(config.codebasePath);
 
       const userPrompt = buildUserPrompt(config.codebasePath, storyIds);
       let lastErr: unknown;

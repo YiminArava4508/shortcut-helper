@@ -53,15 +53,20 @@ Post the plan as a comment on the story using the following format:
 ```
 ## Implementation Plan
 
-1. [File path] — [What to change and why]
-2. [File path] — [What to change and why]
+### Overview
+[One paragraph summary of what is being built and why]
+
+### Implementation Steps
+1. [File path] — [Exact change: function to add, field to update, query to modify, etc.]
+2. [File path] — [Exact change]
 ...
 
----
+### Testing
+- [What to verify once implemented — behaviour, edge cases, endpoints to hit, etc.]
 
-## Assumptions
-[Only include this section if there are genuine unknowns that could affect the implementation]
-- [Assumption and its implication]
+### Assumptions
+[Omit this section entirely if there are none]
+- [Assumption and its implication if wrong]
 ```
 
 ---
