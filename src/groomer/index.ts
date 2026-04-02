@@ -1,6 +1,7 @@
 import { readFileSync, unlinkSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { pullCodebase } from "../lib/codebase-sync.ts";
 import { CLI_MODEL_ALIASES, spawnClaudeSession, writeMcpConfig } from "../lib/spawn-claude.ts";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -38,6 +39,7 @@ export function startGroomer(config: GroomerConfig): () => void {
     running = true;
     try {
       console.log("[groomer] polling for ungroomed stories...");
+      await pullCodebase(config.codebasePath);
       const userPrompt = buildUserPrompt(config.ownerMemberId, config.codebasePath);
       let lastErr: unknown;
       for (let attempt = 1; attempt <= 3; attempt++) {
