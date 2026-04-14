@@ -7,11 +7,22 @@ export type Story = {
   name: string;
   labels: Label[];
   owner_ids: string[];
+  workflow_state_id: number;
 };
 
 type Iteration = {
   id: number;
   status: string;
+};
+
+type WorkflowState = {
+  id: number;
+  name: string;
+};
+
+type Workflow = {
+  id: number;
+  states: WorkflowState[];
 };
 
 async function request<T>(apiToken: string, path: string, options?: RequestInit): Promise<T> {
@@ -43,6 +54,35 @@ export async function getReadyForClaudeStories(apiToken: string, ownerMemberId: 
     (s) =>
       s.owner_ids.includes(ownerMemberId) &&
       s.labels.some((l) => l.name === "Ready-for-Claude"),
+  );
+}
+
+export async function getStoriesInDevelopment(
+  apiToken: string,
+  ownerMemberId: string,
+  stateName = "In Development",
+): Promise<Story[]> {
+  const [iteration, workflows] = await Promise.all([
+    getCurrentIteration(apiToken),
+    request<Workflow[]>(apiToken, "/workflows"),
+  ]);
+
+  const inDevStateIds = new Set<number>();
+  for (const workflow of workflows) {
+    for (const state of workflow.states) {
+      if (state.name.toLowerCase() === stateName.toLowerCase()) {
+        inDevStateIds.add(state.id);
+      }
+    }
+  }
+
+  if (inDevStateIds.size === 0) {
+    throw new Error(`No workflow state found with name "${stateName}"`);
+  }
+
+  const stories = await request<Story[]>(apiToken, `/iterations/${iteration.id}/stories`);
+  return stories.filter(
+    (s) => s.owner_ids.includes(ownerMemberId) && inDevStateIds.has(s.workflow_state_id),
   );
 }
 
